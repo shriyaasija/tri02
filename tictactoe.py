@@ -1,30 +1,27 @@
 import pygame
 import sys
-import time
+import math
+import copy
 from pygame.locals import *
 
-draw_tic_tac_toe = None
-XO = "x"
+chance = "x"
 ttt_board = [[None]*3, [None]*3, [None]*3]
-winner_tic_tac_toe = None
 
 def main():
     WIDTH, HEIGHT = 560, 560
-    #XO = "x"
-    WHITE = (255,255,255)
-    BLACK = (0, 0, 0)
+    WHITE = (84, 184, 121)
+    BLACK = (240, 233, 242)
 
-
-    line_color = (0,0,0)
-    winner_tic_tac_toe = None
-    draw_tic_tac_toe = None
+    line_color = (240, 233, 242)
 
     def initiate_ttt_board():
-        global clock, screen, font
+        global clock, screen, font, draw_tic_tac_toe, winner_tic_tac_toe
         pygame.init()
+        draw_tic_tac_toe = None
+        winner_tic_tac_toe = None
         clock = pygame.time.Clock()
         screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        font = pygame.font.Font(None, 40)
+        font = pygame.font.Font(None, 60)
         screen.fill(WHITE)
 
         pygame.draw.line(screen, line_color, (WIDTH / 3, 0), (WIDTH / 3, HEIGHT), 7)
@@ -36,16 +33,7 @@ def main():
         pygame.draw.line(screen, line_color, (0, HEIGHT / 3 * 2),
                     (WIDTH, HEIGHT / 3 * 2), 7)
         
-        draw_status()
-
-    def draw_status():
-
-        for event in pygame.event.get():
-            if(event.type == pygame.MOUSEBUTTONDOWN):
-                x, y = pygame.mouse.get_pos()
-                user_click(x,y)
         
-        pygame.display.update()
 
     def check_win_tic_tac_toe():
         global ttt_board, winner_tic_tac_toe, draw_tic_tac_toe
@@ -63,26 +51,27 @@ def main():
                 pygame.draw.line(screen, (250, 0, 0), ((col + 1) * WIDTH / 3 - WIDTH / 6, 0),((col + 1) * WIDTH / 3 - WIDTH / 6, HEIGHT), 4)
 
                 break
-        
+                
         # check for diagonal winners
         if (ttt_board[0][0] == ttt_board[1][1] == ttt_board[2][2]) and (ttt_board[0][0] is not None):
         
             #game won diagonally left to right
             winner_tic_tac_toe = ttt_board[0][0]
             pygame.draw.line(screen, (250, 70, 70), (90, 100), (467, 467), 4)
-
+            
         if (ttt_board[0][2] == ttt_board[1][1] == ttt_board[2][0]) and (ttt_board[0][2] is not None):
             #game won diagonally right to left
             winner_tic_tac_toe = ttt_board[0][2]
             pygame.draw.line(screen, (250, 70, 70), (467, 90), (90, 467), 4)
-
+            
         if (all([all(row) for row in ttt_board]) and winner_tic_tac_toe is None):
             draw_tic_tac_toe = True
 
-        draw_status()
 
     def drawXO(row, col):
-        global ttt_board, XO
+        global ttt_board, chance
+        posx = 0
+        #print(row,col)
 
         if row == 1:
             posy = 97
@@ -102,21 +91,21 @@ def main():
         elif col == 3:
             posx = 467
 
-        ttt_board[row-1][col-1] = XO
-        print(XO)
-        text = font.render(XO, True, BLACK)
+        ttt_board[row-1][col-1] = chance
+        #print(ttt_board)
+        #print(chance)
+        text = font.render(chance, True, BLACK)
         text_rect = text.get_rect(center = (posx, posy))
         screen.blit(text, text_rect)
         pygame.display.update()
 
-        print(ttt_board)
-
-        if XO == "x":
-            XO ="o"
+        if chance == "x":
+            chance ="o"
 
         else:
-            XO = "x"
+            chance = "x"
 
+        #print(chance)
         pygame.display.update()
 
     def user_click(x, y):
@@ -145,34 +134,147 @@ def main():
             else:
                 row = None
 
-
-            print(x,y)
-            print(row,col)
-
             if row and col and ttt_board[row-1][col-1] is None:
                 drawXO(row,col)
                 check_win_tic_tac_toe()
 
     def reset_tic_tac_toe():
-        global ttt_board, winner_tic_tac_toe, XO, draw_tic_tac_toe
+        global ttt_board, winner_tic_tac_toe, chance, draw_tic_tac_toe
 
-        XO = "x"
+        chance = "x"
         draw_tic_tac_toe = False
         winner_tic_tac_toe = None
         ttt_board = [[None]*3, [None]*3, [None]*3]
         initiate_ttt_board()
 
+
+    def remainingMoves(board):
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == None: 
+                    return False
+        return True
+
+    def check_winner_minimax():
+        for row in range(3):
+            if(ttt_board[row][0] == ttt_board[row][1] == ttt_board[row][2]):
+                return ttt_board[row][0]
+            
+        for col in range(3):
+            if(ttt_board[0][col] == ttt_board[1][col] == ttt_board[2][col]):
+                return ttt_board[0][col]
+        
+        if(ttt_board[0][0] == ttt_board[1][1] == ttt_board[2][2]):
+            return ttt_board[0][0]
+            
+        if(ttt_board[0][2] == ttt_board[1][1] == ttt_board[2][0]):
+            return ttt_board[0][2]
+        
+        return None
+            
+    def minimax(board, depth, maximizingPlayer):
+        #global ttt_board
+        #print(ttt_board)
+        #print(board)
+        #print()
+        winner = check_winner_minimax()
+        if winner:
+            #print(winner)
+            if winner == "o":
+                return 1
+            if winner == "x":
+                return -1
+
+        elif remainingMoves(board) == True:
+            return 0
+        
+        if maximizingPlayer:
+            best_score = -math.inf
+            for i in range(3):
+                for j in range(3):
+                    if board[i][j] == None:
+                        board[i][j] = "o"
+
+                        score = minimax(board, depth+1, False)
+                        #print(score)
+                        board[i][j] = None
+
+                        best_score = max(score, best_score)
+            
+            return best_score
+        
+        else:
+            best_score = math.inf
+            for i in range(3):
+                for j in range(3):
+                    if board[i][j] == None:
+                        board[i][j] = "x"
+
+                        score = minimax(board, depth+1, True)
+                        #print(score)
+                        board[i][j] = None
+
+                        best_score = min(score, best_score)
+            
+            return best_score
+
+    def winning_move():
+        global ttt_board
+        best_score = -math.inf
+        best_move = None
+        #b_copy = copy.deepcopy(board)
+
+        for i in range(3):
+            for j in range(3):
+                if ttt_board[i][j] == None:
+                    ttt_board[i][j] == "o"
+
+                    val = minimax(ttt_board, 0, False)
+
+                    ttt_board[i][j] = None
+
+                    #print(i,j)
+                    #print(val)
+
+                    if val > best_score:
+                        best_move = (i, j)
+                        best_score = val
+
+        return best_move
+    
     initiate_ttt_board()
 
-    while(True):
+    game_over = False
+
+    while not game_over:
         for event in pygame.event.get():
+            #print(event)
             if event.type == QUIT:
                 pygame.quit()
+                game_over = True
                 sys.exit()
             elif event.type  == pygame.MOUSEBUTTONDOWN:
-                x,y = pygame.mouse.get_pos()
-                print(x,y)
-                user_click(x, y)
-            if(winner_tic_tac_toe or draw_tic_tac_toe):
-                reset_tic_tac_toe()
+                if chance == "x":
+                    x,y = pygame.mouse.get_pos()
+                    user_click(x, y)
+                    
+                if(winner_tic_tac_toe or draw_tic_tac_toe):
+                    game_over = True
+            
+        if chance == "o" and not game_over:
+            move = winning_move()
+            if move:
+                row, col = move
+                #print(row,col)
+                drawXO(row+1,col+1)
+                check_win_tic_tac_toe()
+            
+        if winner_tic_tac_toe or draw_tic_tac_toe:
+            game_over = True
+            
         pygame.display.update()
+
+
+        if game_over:
+            pygame.time.wait(3000)
+            reset_tic_tac_toe()

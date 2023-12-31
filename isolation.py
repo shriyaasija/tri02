@@ -26,6 +26,8 @@ LASTCOLOR2 = white
 O = 'O'
 X = 'X'
 gameover = False
+
+
 def main():
     def possible_move(board, r, c):
         if r < 0 or r >= BOARDWIDTH:
@@ -177,19 +179,7 @@ def main():
         r, c = move
         new_board[r][c] = player
         return new_board
-    
-    def winning_move():
-        best_move = None
-        best_eval = float('-inf')
-
-        for move in legal_moves_O:
-            new_board = make_move(mainBoard, move, 'O')
-            eval = minimax(new_board, 3, False)
-            if eval > best_eval:
-                best_eval = eval
-                best_move = move
-
-    initialise()
+  
     pygame.init()
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode((width, heigth))
@@ -283,3 +273,4 @@ def main():
         if gameover:
             pygame.time.wait(3000)
             reset_game()
+

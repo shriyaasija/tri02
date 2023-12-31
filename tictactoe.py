@@ -1,7 +1,6 @@
 import pygame
 import sys
 import math
-import copy
 from pygame.locals import *
 
 chance = "x"
@@ -71,7 +70,6 @@ def main():
     def drawXO(row, col):
         global ttt_board, chance
         posx = 0
-        #print(row,col)
 
         if row == 1:
             posy = 97
@@ -92,8 +90,6 @@ def main():
             posx = 467
 
         ttt_board[row-1][col-1] = chance
-        #print(ttt_board)
-        #print(chance)
         text = font.render(chance, True, BLACK)
         text_rect = text.get_rect(center = (posx, posy))
         screen.blit(text, text_rect)
@@ -104,8 +100,6 @@ def main():
 
         else:
             chance = "x"
-
-        #print(chance)
         pygame.display.update()
 
     def user_click(x, y):
@@ -173,13 +167,8 @@ def main():
         return None
             
     def minimax(board, depth, maximizingPlayer):
-        #global ttt_board
-        #print(ttt_board)
-        #print(board)
-        #print()
         winner = check_winner_minimax()
         if winner:
-            #print(winner)
             if winner == "o":
                 return 1
             if winner == "x":
@@ -196,7 +185,6 @@ def main():
                         board[i][j] = "o"
 
                         score = minimax(board, depth+1, False)
-                        #print(score)
                         board[i][j] = None
 
                         best_score = max(score, best_score)
@@ -211,7 +199,6 @@ def main():
                         board[i][j] = "x"
 
                         score = minimax(board, depth+1, True)
-                        #print(score)
                         board[i][j] = None
 
                         best_score = min(score, best_score)
@@ -233,9 +220,6 @@ def main():
 
                     ttt_board[i][j] = None
 
-                    #print(i,j)
-                    #print(val)
-
                     if val > best_score:
                         best_move = (i, j)
                         best_score = val
@@ -248,7 +232,6 @@ def main():
 
     while not game_over:
         for event in pygame.event.get():
-            #print(event)
             if event.type == QUIT:
                 pygame.quit()
                 game_over = True
@@ -265,7 +248,6 @@ def main():
             move = winning_move()
             if move:
                 row, col = move
-                #print(row,col)
                 drawXO(row+1,col+1)
                 check_win_tic_tac_toe()
             

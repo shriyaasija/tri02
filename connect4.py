@@ -3,12 +3,13 @@ import random
 import pygame
 import sys
 import math
+import os
 
 def main():
 	DARK_BLUE = (3, 49, 252)
 	BLACK = (0,0,0)
-	GREEN = (240, 233, 98)
-	PURPLE = (150, 21, 21)
+	YELLOW = (240, 233, 98)
+	RED = (150, 21, 21)
 
 	ROW_COUNT = 6
 	COLUMN_COUNT = 7
@@ -198,9 +199,9 @@ def main():
 		for c in range(COLUMN_COUNT):
 			for r in range(ROW_COUNT):		
 				if board[r][c] == PLAYER_PIECE:
-					pygame.draw.circle(screen, GREEN, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE/2)), RADIUS)
+					pygame.draw.circle(screen, YELLOW, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE/2)), RADIUS)
 				elif board[r][c] == AI_PIECE: 
-					pygame.draw.circle(screen, PURPLE, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE/2)), RADIUS)
+					pygame.draw.circle(screen, RED, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE/2)), RADIUS)
 		pygame.display.update()
 
 	board = create_board()
@@ -222,8 +223,10 @@ def main():
 	draw_board(board)
 	pygame.display.update()
 
-	myfont = pygame.font.Font("C:/Users/91636/OneDrive/Documents/PES/Python - Sem 1/Trial/PressStart2P-vaV7.ttf")
-
+	assets_dir = os.path.join("assets")
+	myfont_dir = os.path.join(assets_dir, "font")
+	myfont = pygame.font.Font(os.path.join(myfont_dir, "PressStart2P-vaV7.ttf"), 37)
+	#myfont = pygame.font.Font("C:/Users/91636/OneDrive/Documents/PES/Python - Sem 1/Trial/PressStart2P-vaV7.ttf")
 	turn = random.randint(PLAYER, AI)
 
 	while not game_over:
@@ -236,7 +239,7 @@ def main():
 				pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
 				posx = event.pos[0]
 				if turn == PLAYER:
-					pygame.draw.circle(screen, GREEN, (posx, int(SQUARESIZE/2)), RADIUS)
+					pygame.draw.circle(screen, YELLOW, (posx, int(SQUARESIZE/2)), RADIUS)
 
 			pygame.display.update()
 
@@ -253,8 +256,8 @@ def main():
 						drop_piece(board, row, col, PLAYER_PIECE)
 
 						if winning_move(board, PLAYER_PIECE):
-							label = myfont.render("Player 1 wins!!", 1, GREEN)
-							screen.blit(label, (200,20))
+							label = myfont.render("Player 1 wins!!", 1, YELLOW)
+							screen.blit(label, (0,20))
 							game_over = True
 
 						turn += 1
@@ -277,8 +280,8 @@ def main():
 				drop_piece(board, row, col, AI_PIECE)
 
 				if winning_move(board, AI_PIECE):
-					label = myfont.render("Player 2 wins!!", 1, PURPLE)
-					screen.blit(label, (200,20))
+					label = myfont.render("Player 2 wins!", 1, RED)
+					screen.blit(label, (20,20))
 					game_over = True
 
 				print_board(board)

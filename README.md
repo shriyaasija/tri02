@@ -1,5 +1,3 @@
 # tri02
 
-Connect 4
-Tic-Tac-Toe
-Isolation
+Created a multiplayer game with TicTacToe, Connect4 and Isolation. 

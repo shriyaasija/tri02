@@ -29,6 +29,7 @@ gameover = False
 
 
 def main():
+    
     def possible_move(board, r, c):
         if r < 0 or r >= BOARDWIDTH:
             return False
@@ -48,9 +49,6 @@ def main():
 
         return valid_moves
 
-    def initialise():
-        global clock, screen, mainBoard, playerTurn, legal_moves_O, legal_moves_X, move_cnt, mouse_x, mouse_y
-        pass
 
     def getBoxAtPixel(x, y): # Draw Box on display surface   
         for box_x in range(BOARDWIDTH):
@@ -60,6 +58,7 @@ def main():
                 if boxRect.collidepoint(x, y):
                     return (box_x, box_y)
         return (None, None)
+
 
     def drawStatus(PlayerTurn, count = 0, lose = False):
         global gameover
@@ -89,6 +88,7 @@ def main():
         screen.blit(labelgreen, (left, top + 25))
 
 
+
     def drawBoard(board, playerTurn, legal_moves=[], last_move_own=None, last_move_opp=None):
         # Draws all of the boxes in their covered or revealed state.
 
@@ -114,10 +114,12 @@ def main():
                     drawXO(board[box_x][box_y], box_x, box_y)
 
 
+
     def leftTopCoordsOfBox(box_x, box_y): # Convert board coordinates to pixel
         left = 63 + (box_x * (BOXSIZE + GAPSIZE) + GAPSIZE)
         top = 30 + (box_y * (BOXSIZE + GAPSIZE) + GAPSIZE)
         return (left, top)
+
 
     def drawXO(playerTurn, box_x, box_y):
         left, top = leftTopCoordsOfBox(box_x, box_y)
@@ -129,8 +131,10 @@ def main():
             pygame.draw.circle(screen, LINECOLOR, (left + HALF, top + HALF), HALF - 3, 4)
 
 
+
     def hasWon(board):# Returns True if player 1 or 2 wins
         return True
+
 
 
     def hasDraw(board):# Returns True if all the boxes have been filled
@@ -138,7 +142,8 @@ def main():
             if None in i:
                 return False
         return True
-    
+
+
     def reset_game():
         global clock, screen, mainBoard, playerTurn, legal_moves_O, legal_moves_X, move_cnt, mouse_x, mouse_y, last_move_O, last_move_X
         mouse_x = 0  # used to store x coordinate of mouse event
@@ -151,6 +156,7 @@ def main():
         move_cnt = 0
         last_move_X = None
         last_move_O = None
+
 
     def minimax(board, depth, isMax):
         if hasWon(board):
@@ -173,13 +179,15 @@ def main():
                 eval = minimax(new_board, depth-1, True)
                 minEval = min(minEval, eval)
             return minEval
-        
+
+
     def make_move(current_board, move, player):
         new_board = [row.copy() for row in current_board]
         r, c = move
         new_board[r][c] = player
         return new_board
-  
+
+
     pygame.init()
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode((width, heigth))
